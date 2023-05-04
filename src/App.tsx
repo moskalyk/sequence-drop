@@ -3,7 +3,7 @@ import logo from './logo.svg';
 import './App.css';
 import topRightSrc from './red.png'
 
-import {CheckmarkIcon, Box, IconButton, useTheme, SunIcon} from '@0xsequence/design-system'
+import {CheckmarkIcon, Box, IconButton, useTheme, SunIcon, ChevronRightIcon, ChevronLeftIcon} from '@0xsequence/design-system'
 
 import image0 from './imgs/0.png'
 import image1 from './imgs/1.png'
@@ -11,7 +11,7 @@ import image2 from './imgs/2.png'
 import image3 from './imgs/3.png'
 
 function App() {
-  
+
   const {theme, setTheme} = useTheme()
 
   const [red, setRed] = React.useState(true)
@@ -25,6 +25,14 @@ function App() {
   const [yellowClaimed, setYellowClaimed] = React.useState(false);
   const [greenClaimed, setGreenClaimed] = React.useState(false);
   const [blueClaimed, setBlueClaimed] = React.useState(false);
+
+  const advance = () => {
+    console.log('advancing')
+  }
+
+  const before = () => {
+    console.log('before')
+  }
 
   return (
     <div className="App">
@@ -105,16 +113,22 @@ function App() {
           <div className="keypad__subtitle">NFT Entertaiment system</div>
           <div className="central-button-container select">
             <div className="central-button"></div>
-            <p>Select</p>
+            <br/>
+            <p>Details</p>
           </div>
           <div className="central-button-container start">
             <div className="central-button"></div>
-            <p>Start</p>
+            <br/>
+            <p>&nbsp;&nbsp;Wallet</p>
           </div>
         </div>
         <div className="pad-left">
-          <div className="cross-x"></div>
-          <div className="cross-middle"></div>
+          <div className="cross-x" >
+            <p className='float-child-left' onClick={() => before()}><ChevronLeftIcon size='xl'/></p>
+            &nbsp;&nbsp;&nbsp;
+            <p className='float-child' onClick={() => advance()}><ChevronRightIcon size='xl'/></p>
+            </div>
+          {/* <div className="cross-middle"></div> */}
         </div>
         <div className="pad-right">
           <div className="circular-button y-button" onClick={() => setGreenClaimed(true)}></div>

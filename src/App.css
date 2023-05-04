@@ -42,6 +42,33 @@ body {
   zoom:50%;
 }
 
+.float-child {
+  font-size: 50px;
+  height: 45px;
+  width: 50%;
+  float: left;
+  left: 10vw;
+  padding-left: 70px;
+  padding-right: 20px;
+  /* border: 2px solid red; */
+}  
+.float-child-left {
+  font-size: 50px;
+  height: 30px;
+  width: 50%;
+  float: left;
+  left: 10vw;
+
+  margin-left: -5vw;
+  padding-left: 40px;
+  padding-right: 20px;
+  /* border: 2px solid red; */
+}  
+
+p {
+  margin-left: -2vw !important
+}
+
 .image-wrapper {
   padding: 10px;
   z-index: 100;
@@ -274,7 +301,7 @@ img {
 .cross-y {
   position: absolute;
   width: 80%;
-  height: 25%;
+  height: 29%;
   background: #4e47f5;
   top: 37.5%;
   left: 10%;
@@ -287,8 +314,8 @@ img {
   content: "";
   width: 0;
   height: 0;
-  border-width: 1em 1.8em;
-  border-color: transparent transparent transparent white;
+  /* border-width: 1em 1.8em; */
+  /* border-color: transparent transparent transparent white; */
   border-style: solid;
   position: absolute;
   opacity: 0.15;

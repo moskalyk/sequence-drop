@@ -1,149 +1,14 @@
-.App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+@import url(https://fonts.googleapis.com/css?family=Oswald);
+* {
+  box-sizing: border-box;
 }
 
 body {
-  background-color: black;
-  zoom:50%;
+  background: black;
 }
 
-.image-wrapper {
-  padding: 10px;
-  z-index: 100;
-}
-
-img {
-  width: 280px;
-  height: 280px;
-  z-index: 100;
-  object-fit: cover;
-}
-
-.image-wrapper:hover {
-  z-index: 100;
-  padding: 10px;
-  object-fit: fill;
-}
-
-.display-right {
-  margin-left: 130vw;
-  width: 800px;
-  height: 800px;
-  position: absolute;
-  z-index: -1;
-}
-
-.display-left {
-  margin-left: -130vw;
-  width: 800px;
-  height: 800px;
-  position: absolute;
-  z-index: -1;
-}
-
-.spacer {
-  margin-top: 26vh;
-}
-
-.grid-container {
-  margin: auto;
-  display: grid;
-  grid-template-columns: repeat(2, 300px);
-  grid-template-rows: repeat(2, 300px);
-  grid-gap: 5px;
-}
-
-.container {
-  display: flex;
-  justify-content: center;
-}
-
-.red {
-  background-color: red;
-  z-index: 0;
-}
-
-.yellow {
-  background-color: yellow;
-  z-index: 0;
-
-}
-
-.green {
-  background-color: green;
-  z-index: 0;
-
-}
-
-.blue {
-  background-color: blue;
-  z-index: 0;
-
-}
-
-.claimed {
-  opacity: .25;
-}
-
-.square {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.grid-text {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: white;
+h1 {
   text-align: center;
-  opacity: 1;
-}
-
-.centered {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 100;
-  color: black;
 }
 
 .keypad {
@@ -333,10 +198,6 @@ img {
   z-index: 500;
 }
 
-.circular-button:hover {
-  background: #ae10a8;
-}
-
 .a-button {
   background: linear-gradient(#BF2231 10%, #7e1620 90%);
   top: 50%;
@@ -445,4 +306,3 @@ img {
   left: 50%;
   transform: translateX(-50%);
 }
-

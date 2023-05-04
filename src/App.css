@@ -69,7 +69,7 @@ img {
 }
 
 .display-left {
-  margin-left: -130vw;
+  left: 5vw;
   width: 800px;
   height: 800px;
   position: absolute;

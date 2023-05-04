@@ -113,7 +113,7 @@ function App() {
               setLeft(false)
             }} 
             onMouseEnter={()=> {
-              setHoverImage(image0)
+              setHoverImage(redImage)
               setRed(true)
               setLeft(true)
             }}
@@ -128,7 +128,7 @@ function App() {
               setLeft(false)
             }} 
             onMouseEnter={()=> {
-              setHoverImage(image1)
+              setHoverImage(blueImage)
               setLeft(false)
             }}>
             { minted[index + 2] ? <div className="grid-text"><CheckmarkIcon size={'xl'}/></div> : null }
@@ -141,7 +141,7 @@ function App() {
               setLeft(false)
             }} 
             onMouseEnter={()=> {
-              setHoverImage(image2)
+              setHoverImage(yellowImage)
               setLeft(true)
             }}>
             { minted[index + 1] ? <div className="grid-text"><CheckmarkIcon size={'xl'}/></div> : null }
@@ -153,7 +153,7 @@ function App() {
               setHoverImage('')
             }} 
             onMouseEnter={()=> {
-              setHoverImage(image3)
+              setHoverImage(greenImage)
             }}>
             { minted[index + 3] ? <div className="grid-text"><CheckmarkIcon size={'xl'}/></div> : null }
             <div className={`image-wrapper ${minted[index + 3] ? 'claimed' : null}`}>

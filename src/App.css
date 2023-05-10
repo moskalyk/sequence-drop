@@ -50,6 +50,8 @@ body {
 .container {
   display: flex;
   justify-content: space-between;
+  margin-left: -3vw;
+  margin-top: -0.5vh;
 }
 
 .float-child {

@@ -168,7 +168,7 @@ function App() {
       <div className="keypad">
         <div className="keypad__inner">
           <div className="keypad__title">Sequence Drop</div><br/>
-          <div className="keypad__subtitle">NFT Entertaiment system</div>
+          <div className="keypad__subtitle">NFT Entertainment system</div>
           <div className="central-button-container select">
             <div className="central-button"></div>
             <br/>
@@ -182,10 +182,14 @@ function App() {
         </div>
         <div className="pad-left">
           <div className="cross-x" >
-            <p className='float-child-left' onClick={() => before()}><ChevronLeftIcon size='xl'/></p>
-            &nbsp;&nbsp;&nbsp;
-            <p className='float-child' onClick={() => advance()}><ChevronRightIcon size='xl'/></p>
+            <div className='container'>
+              <div className="left" onClick={() => before()}><ChevronLeftIcon size='xl'/></div>
+              <div className="right" onClick={() => advance()}><ChevronRightIcon size='xl'/></div>
             </div>
+            {/* <p className='float-child-left' onClick={() => before()}><ChevronLeftIcon size='xl'/></p>
+            &nbsp;&nbsp;&nbsp;
+            <p className='float-child' onClick={() => advance()}><ChevronRightIcon size='xl'/></p> */}
+          </div>
           {/* <div className="cross-middle"></div> */}
         </div>
         <div className="pad-right">

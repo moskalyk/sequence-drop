@@ -7,42 +7,22 @@ import {CheckmarkIcon, Box, IconButton, useTheme, SunIcon, ChevronRightIcon, Che
   Spinner, Placeholder, Button} from '@0xsequence/design-system'
 
 import { SequenceIndexerClient } from '@0xsequence/indexer'
-
-import image0 from './imgs/0.png'
-import image1 from './imgs/1.png'
-import image2 from './imgs/2.png'
-import image3 from './imgs/3.png'
-import image4 from './imgs/4.png'
-import image5 from './imgs/5.png'
-import image6 from './imgs/6.png'
-import image7 from './imgs/7.png'
-import image8 from './imgs/8.png'
-import image9 from './imgs/9.png'
-import image10 from './imgs/10.png'
-import image11 from './imgs/11.png'
-import image12 from './imgs/12.png'
-import image13 from './imgs/13.png'
-import image14 from './imgs/14.png'
-import image15 from './imgs/15.png'
 import controller from './snes.png'
 import controllerLight from './snes_light.png'
 
-// import image16 from './imgs/16.png'
+const contractAddress = '0xd864ab22af4b21c3da6b0200b18e8611d3e1d5f0'
 
-// let minted = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 let index = 0;
 
 const Splash = (props: any) => {
   const {theme} = useTheme()
-  // const [loggedIn, setLoggedIn] = React.useState<boolean>(false)
-  // const [address, setAddress] = React.useState<any>(null)
 
   sequence.initWallet('polygon') 
 
   React.useEffect(() => {
     const image = document.getElementById('controller')!
 
-    image!.addEventListener('load', () => {
+    if(image) image!.addEventListener('load', () => {
       props.setThemeLoading(false)
     })
   }, [])
@@ -94,9 +74,7 @@ function App() {
 
   const [minted, setMinted] = React.useState([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
 
-  const [collection, setCollection] = React.useState([
-    image0, image1, image2, image3, image4,image5,image6,image7,image8,image9,image10,image11,image12,image13,image14,image15
-  ])
+  const [collection, setCollection] = React.useState<any>([])
   const [red, setRed] = React.useState(true)
   const [yellow, setYellow] = React.useState(true)
   const [green, setGreen] = React.useState(true)
@@ -132,10 +110,10 @@ function App() {
     if(index < 12 ){
       index = index + 4
       setLoading(true)
-      setRedImage(collection[index])
-      setBlueImage(collection[index + 2])
-      setYellowImage(collection[index + 1])
-      setGreenImage(collection[index + 3])
+      setRedImage(collection[index].image)
+      setBlueImage(collection[index + 2].image)
+      setYellowImage(collection[index + 1].image)
+      setGreenImage(collection[index + 3].image)
     }
   }
 
@@ -145,31 +123,77 @@ function App() {
       index = index - 4
       setLoading(true)
       console.log('before2');
-      setRedImage(collection[index])
-      setBlueImage(collection[index + 2])
-      setYellowImage(collection[index + 1])
-      setGreenImage(collection[index + 3])
+      setRedImage(collection[index].image)
+      setBlueImage(collection[index + 2].image)
+      setYellowImage(collection[index + 1].image)
+      setGreenImage(collection[index + 3].image)
     }
   }
 
-  const getBalances = async () => {
+  const getAvailableBalances = async () => {
     const indexer = new SequenceIndexerClient('https://mumbai-indexer.sequence.app')
-
-    const contractAddress = '0xd864aB22AF4b21c3Da6b0200b18e8611d3E1D5f0'
 
     const nftBalances = await indexer.getTokenBalances({
         contractAddress: contractAddress,
         includeMetadata: true
     })
 
-    console.log('collection of items:', nftBalances)
+    const nfts = nftBalances.balances.map((nft: any) => {
+      return {
+        image: nft.tokenMetadata.image,
+        tokenID: nft.tokenID
+      }
+    })
+    setCollection(nfts)
+  }
+
+  const getMintedBalances = async () => {
+    const indexer = new SequenceIndexerClient('https://mumbai-indexer.sequence.app')
+
+    const accountAddress = address
+
+    const nftBalances = await indexer.getTokenBalances({
+        accountAddress: accountAddress,
+        // includeMetadata: true
+    })
+
+    console.log(nftBalances)
+    const nfts = nftBalances.balances.map((nft: any) => {
+      if(nft.contractAddress == contractAddress ){
+        return {
+          tokenID: Number(nft.tokenID),
+          balance: Number(nft.balance)
+        }
+      }
+    })
+
+    const sorted = nfts.sort((a: any, b: any) => a.tokenID - b.tokenID);
+
+    const minted01 = sorted.map((nft: any) => {
+      if(nft.balance > 0) return 1
+      else return 0
+    })
+
+    setMinted(minted01)
   }
 
   React.useEffect(() => {
+    if(collection[index]){
+      setRedImage(collection[index].image)
+      setBlueImage(collection[index + 2].image)
+      setYellowImage(collection[index + 1].image)
+      setGreenImage(collection[index + 3].image)
+    }
+  }, [collection])
+
+  React.useEffect(() => {
     if(!init){
-      setInterval(() => {
-        getBalances()
-      }, 2000)
+      if(loggedIn){
+        getAvailableBalances()
+        setInterval(() => {
+          getMintedBalances()
+        }, 2000)
+      }
 
       const imageRed = document.getElementById('red')!;
       
@@ -218,13 +242,16 @@ function App() {
       })
     }
 
-  }, [index, loggedIn, redImage, minted, step, pendingBlue, pendingGreen, pendingRed, pendingYellow])
+  }, [collection, index, loggedIn, redImage, minted, step, pendingBlue, pendingGreen, pendingRed, pendingYellow])
 
   const handleMintChange = (index: any, pending: any) => {
     let items = [...minted];
     items[index] = 1;
     setMinted(items)
     pending(true)
+
+    mint(collection[index].tokenID, address)
+
     setTimeout(() => {
       pending(false)
     }, 2000)
@@ -247,6 +274,27 @@ function App() {
     wallet.openWallet()
   }
 
+  const mint = (type: any, address: any) => {
+    fetch("http://localhost:4000/transaction", {
+            method: "POST",
+            headers: {
+              "content-type": "application/json",
+            },
+            body: JSON.stringify({ 
+              address: address,
+              type: type
+            }),
+          }).then((res) => {
+            console.log(res)
+
+          })
+  }
+
+  const drop = () => {
+    console.log('dropping')
+    
+  }
+
   React.useEffect(() => {
     if(theme == 'light') document.body.style.background = 'white'
     else document.body.style.background = 'black'
@@ -267,7 +315,7 @@ function App() {
       {
         ! loggedIn 
         ? 
-          <Splash setThemeLoading={setThemeLoading} themeLoading={themeLoading} setLoggedIn={setLoggedIn} setAddress={setAddress}/> 
+          <Splash address={address} setThemeLoading={setThemeLoading} themeLoading={themeLoading} setLoggedIn={setLoggedIn} setAddress={setAddress}/> 
         :
           <>
             <div className="container">

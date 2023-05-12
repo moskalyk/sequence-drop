@@ -39,6 +39,14 @@ const Splash = (props: any) => {
 
   sequence.initWallet('polygon') 
 
+  React.useEffect(() => {
+    const image = document.getElementById('controller')!
+
+    image!.addEventListener('load', () => {
+      props.setThemeLoading(false)
+    })
+  }, [])
+
   const connect = async () => {
 
     const wallet = sequence.getWallet()
@@ -66,7 +74,8 @@ const Splash = (props: any) => {
     <br/>
     <p className='title'>1-click gasless collectibles</p>
     <br/>
-    <img className='jiggle-image' src={theme == 'light' ? controllerLight : controller} />
+      <img id='controller' className={`jiggle-image ${props.themeLoading ? 'loading' : null}`} src={theme == 'light' ? controllerLight : controller} />
+    {props.themeLoading ? <div className={`square`}><Placeholder style={{height: '260px', width: '260px'}}size='xl' width="full" height="full"/></div> : null}
     <br/>
     <br/>
     <Box justifyContent={'center'}>
@@ -116,6 +125,7 @@ function App() {
   const [init, setInit] = React.useState(false)
   const [loading, setLoading] = React.useState(true)
   const [loggedIn, setLoggedIn] = React.useState(false)
+  const [themeLoading, setThemeLoading] = React.useState(false)
 
   const advance = () => {
     console.log('advancing')
@@ -246,6 +256,7 @@ function App() {
       <Box gap='6'>
         <IconButton style={{position: 'fixed', top: '20px', right: '20px'}} icon={SunIcon} onClick={() => {
           setTheme(theme == 'dark' ? 'light' : 'dark')
+          setThemeLoading(true)
         }}/>
       </Box>
       <br/>
@@ -256,7 +267,7 @@ function App() {
       {
         ! loggedIn 
         ? 
-          <Splash setLoggedIn={setLoggedIn} setAddress={setAddress}/> 
+          <Splash setThemeLoading={setThemeLoading} themeLoading={themeLoading} setLoggedIn={setLoggedIn} setAddress={setAddress}/> 
         :
           <>
             <div className="container">

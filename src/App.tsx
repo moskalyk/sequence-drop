@@ -31,8 +31,8 @@ const Splash = (props: any) => {
 
     const wallet = sequence.getWallet()
     const connectWallet = await wallet.connect({
-      networkId: 137,
-      app: 'Paris Basketball',
+      networkId: 80001,
+      app: 'Sequence Drop',
       authorize: true,
       settings: {
         theme: 'dark'

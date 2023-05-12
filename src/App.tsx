@@ -3,7 +3,8 @@ import logo from './logo.svg';
 import './App.css';
 import topRightSrc from './red.png'
 import { sequence } from '0xsequence'
-import {CheckmarkIcon, Box, IconButton, useTheme, SunIcon, ChevronRightIcon, ChevronLeftIcon, Spinner} from '@0xsequence/design-system'
+import {CheckmarkIcon, Box, IconButton, useTheme, SunIcon, ChevronRightIcon, ChevronLeftIcon, 
+  Spinner, Placeholder} from '@0xsequence/design-system'
 
 import image0 from './imgs/0.png'
 import image1 from './imgs/1.png'
@@ -61,12 +62,16 @@ function App() {
   const [pendingGreen, setPendingGreen] = React.useState(false)
 
   const [select, setSelect] = React.useState(false)
+  const [connected, setConnected] = React.useState(false)
+
+  const [init, setInit] = React.useState(false)
+  const [loading, setLoading] = React.useState(false)
 
   const advance = () => {
     console.log('advancing')
     if(index < 12 ){
-      // setIndex((prev: any) => prev + 1)
       index = index + 4
+      setLoading(true)
       setRedImage(collection[index])
       setBlueImage(collection[index + 2])
       setYellowImage(collection[index + 1])
@@ -77,9 +82,9 @@ function App() {
   const before = () => {
     console.log('before')
     if(index > 0 ){
-      // setIndex((prev: any) => prev - 1)
       index = index - 4
-      console.log('before2')
+      setLoading(true)
+      console.log('before2');
       setRedImage(collection[index])
       setBlueImage(collection[index + 2])
       setYellowImage(collection[index + 1])
@@ -88,7 +93,51 @@ function App() {
   }
 
   React.useEffect(() => {
-  }, [index, redImage, minted, step])
+    if(!init){
+      setInit(true)
+      const imageRed = document.getElementById('red')!;
+      imageRed.addEventListener('load', function() {
+        // Image has finished loading
+        console.log('Image loaded successfully!');
+        setPendingRed(false)
+        console.log(pendingRed)
+        console.log(pendingBlue)
+          console.log(pendingBlue)
+            console.log(pendingYellow)
+        if(!pendingRed && !pendingBlue && !pendingBlue && !pendingYellow){
+          setLoading(false)
+        }
+      });
+      const imageBlue = document.getElementById('blue')!;
+      imageBlue.addEventListener('load', function() {
+        // Image has finished loading
+        console.log('Image loaded successfully!');
+        setPendingBlue(false)
+        if(!pendingRed && !pendingBlue && !pendingBlue && !pendingYellow){
+          setLoading(false)
+        }
+      });
+      const imageYellow = document.getElementById('yellow')!;
+      imageYellow.addEventListener('load', function() {
+        // Image has finished loading
+        console.log('Image loaded successfully!');
+        setPendingYellow(false)
+        if(!pendingRed && !pendingBlue && !pendingBlue && !pendingYellow){
+          setLoading(false)
+        }
+      });
+      const imageGreen = document.getElementById('green')!;
+      imageGreen.addEventListener('load', function() {
+        // Image has finished loading
+        console.log('Image loaded successfully!');
+        setPendingGreen(false)
+        if(!pendingRed && !pendingBlue && !pendingBlue && !pendingYellow){
+          setLoading(false)
+        }
+      });
+    }
+
+  }, [index, redImage, minted, step, pendingBlue, pendingGreen, pendingRed, pendingYellow])
 
   const handleMintChange = (index: any, pending: any) => {
     let items = [...minted];
@@ -100,8 +149,20 @@ function App() {
     }, 2000)
   }
 
-  const openWallet = () => {
+  const openWallet = async () => {
     const wallet = sequence.getWallet()
+    if(!connected){
+      const connectWallet = await wallet.connect({
+        networkId: 80001,
+        app: 'Sequence Drop',
+        authorize: true,
+        settings: {
+          theme: theme 
+        }
+      })
+      setConnected(connectWallet.connected)
+    }
+
     wallet.openWallet()
   }
 
@@ -119,7 +180,7 @@ function App() {
       <br/>
       <div className="container">
         <div className="grid-container">
-          <div className="red square" 
+        <div className={`red square ${loading ? 'loading' : null}`} 
             onMouseLeave={() => {
               setHoverImage('')
               setRed(false)
@@ -131,12 +192,13 @@ function App() {
               setLeft(true)
             }}
             >
-            { minted[index] ? <div className="grid-text">{pendingRed ? <Spinner size='lg'/> : <CheckmarkIcon size={'xl'}/>}</div> : null }
-            <div className={`image-wrapper ${minted[index] ? 'claimed' : null}`}>
-              { !select ? <img src={redImage} alt="your image description"/> : <p>{minted[index]}</p>}
+            { !select ? minted[index] ? <div className="grid-text">{pendingRed ? <Spinner size='lg'/> : <CheckmarkIcon size={'xl'}/>}</div> : null : null }
+            <div className={`image-wrapper ${minted[index] && !select ? 'claimed' : null}`}>
+              { !select ? <img id="red" src={redImage} alt="your image description"/> : <p>{minted[index]}</p>}
             </div>
           </div>
-          <div className="blue square" onMouseLeave={() => {
+          {loading ? <Placeholder/> : null }
+          <div className={`blue square ${loading ? 'loading' : null}`}  onMouseLeave={() => {
               setHoverImage('')
               setLeft(false)
             }} 
@@ -144,12 +206,14 @@ function App() {
               setHoverImage(blueImage)
               setLeft(false)
             }}>
-            { minted[index + 2] ? <div className="grid-text">{pendingBlue ? <Spinner size='lg'/> : <CheckmarkIcon size={'xl'}/>}</div> : null }
-            <div className={`image-wrapper ${minted[index + 2] ? 'claimed' : null}`}>
-              { !select ? <img src={blueImage} alt="your image description"/> : <p>{minted[index + 2]}</p>}
+            { !select ? minted[index + 2] ? <div className="grid-text">{pendingBlue ? <Spinner size='lg'/> : <CheckmarkIcon size={'xl'}/>}</div> : null : null }
+            <div className={`image-wrapper ${minted[index + 2] && !select ? 'claimed' : null}`}>
+              { !select ? <img id="blue" src={blueImage} alt="your image description"/> : <p>{minted[index + 2]}</p>}
             </div>
           </div>
-          <div className="yellow square" onMouseLeave={() => {
+          {loading ? <Placeholder/> : null }
+
+          <div className={`yellow square ${loading ? 'loading' : null}`}  onMouseLeave={() => {
               setHoverImage('')
               setLeft(false)
             }} 
@@ -157,22 +221,26 @@ function App() {
               setHoverImage(yellowImage)
               setLeft(true)
             }}>
-            { minted[index + 1] ? <div className="grid-text">{pendingYellow ? <Spinner size='lg'/> : <CheckmarkIcon size={'xl'}/>}</div> : null }
-            <div className={`image-wrapper ${minted[index + 1] ? 'claimed' : null}`}>
-              { !select ? <img src={yellowImage} alt="your image description"/> : <p>{minted[index + 1]}</p>}
+            { !select ? minted[index + 1] ? <div className="grid-text">{pendingYellow ? <Spinner size='lg'/> : <CheckmarkIcon size={'xl'}/>}</div> : null : null }
+            <div className={`image-wrapper ${minted[index + 1] && !select ? 'claimed' : null}`}>
+              { !select ? <img id="yellow" src={yellowImage} alt="your image description"/> : <p>{minted[index + 1]}</p>}
             </div>
           </div> 
-           <div className="green square" onMouseLeave={() => {
+          {loading ? <Placeholder/> : null }
+
+           <div className={`green square ${loading ? 'loading' : null}`}  onMouseLeave={() => {
               setHoverImage('')
             }} 
             onMouseEnter={()=> {
               setHoverImage(greenImage)
             }}>
-            { minted[index + 3] ? <div className="grid-text">{pendingGreen ? <Spinner size='lg'/> : <CheckmarkIcon size={'xl'}/>}</div> : null }
-            <div className={`image-wrapper ${minted[index + 3] ? 'claimed' : null}`}>
-              { !select ? <img src={greenImage} alt="your image description"/> : <p>{minted[index + 3]}</p>}
+            { !select ? minted[index + 3] ? <div className="grid-text">{pendingGreen ? <Spinner size='lg'/> : <CheckmarkIcon size={'xl'}/>}</div> : null : null }
+            <div className={`image-wrapper ${minted[index + 3] && !select ? 'claimed' : null}`}>
+              { !select ? <img id="green" src={greenImage} alt="your image description"/> : <p>{minted[index + 3]}</p>}
             </div>
           </div>
+          {loading ? <Placeholder/> : null }
+
         </div>
         {(hoverImage && (red || yellow) && (left))? <img className='display-left' src={hoverImage} /> : (hoverImage && (red || yellow) && (!left)) ? <img className='display-right' src={hoverImage} />: null }
       </div>

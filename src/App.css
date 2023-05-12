@@ -494,7 +494,12 @@ img {
   position: absolute;
   background: linear-gradient(to left, #dd14d5 10%, #f166ec 40%, #4e47f5 80%);
   top: -10em;
-  left: 48%;
+  left: 50%;
   transform: translateX(-50%);
+}
+
+.loading {
+  display: none;
+  position: absolute;
 }
 

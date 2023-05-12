@@ -24,13 +24,16 @@ import image12 from './imgs/12.png'
 import image13 from './imgs/13.png'
 import image14 from './imgs/14.png'
 import image15 from './imgs/15.png'
-import controller from './imgs/snes.png'
+import controller from './snes.png'
+import controllerLight from './snes_light.png'
+
 // import image16 from './imgs/16.png'
 
 // let minted = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 let index = 0;
 
 const Splash = (props: any) => {
+  const {theme} = useTheme()
   // const [loggedIn, setLoggedIn] = React.useState<boolean>(false)
   // const [address, setAddress] = React.useState<any>(null)
 
@@ -61,7 +64,10 @@ const Splash = (props: any) => {
     <h1 className='title'>Sequence Drop</h1>
     <br/>
     <br/>
-    <img className='jiggle-image' src={controller} />
+    <p className='title'>1-click gasless collectibles</p>
+    <br/>
+    <img className='jiggle-image' src={theme == 'light' ? controllerLight : controller} />
+    <br/>
     <br/>
     <Box justifyContent={'center'}>
       <Button onClick={connect} variant={'primary'} size='lg' label="login"/>
@@ -231,6 +237,10 @@ function App() {
     wallet.openWallet()
   }
 
+  React.useEffect(() => {
+    if(theme == 'light') document.body.style.background = 'white'
+    else document.body.style.background = 'black'
+  }, [theme])
   return (
     <div className="App">
       <Box gap='6'>

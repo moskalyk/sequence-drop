@@ -95,7 +95,8 @@ body {
 }  
 
 .p {
-  margin-left: -2vw !important
+  margin-left: -2vw !important;
+  color: white;
 }
 
 .image-wrapper {

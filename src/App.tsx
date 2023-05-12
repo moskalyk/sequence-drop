@@ -4,7 +4,9 @@ import './App.css';
 import topRightSrc from './red.png'
 import { sequence } from '0xsequence'
 import {CheckmarkIcon, Box, IconButton, useTheme, SunIcon, ChevronRightIcon, ChevronLeftIcon, 
-  Spinner, Placeholder} from '@0xsequence/design-system'
+  Spinner, Placeholder, Button} from '@0xsequence/design-system'
+
+import { SequenceIndexerClient } from '@0xsequence/indexer'
 
 import image0 from './imgs/0.png'
 import image1 from './imgs/1.png'
@@ -22,12 +24,53 @@ import image12 from './imgs/12.png'
 import image13 from './imgs/13.png'
 import image14 from './imgs/14.png'
 import image15 from './imgs/15.png'
+import controller from './imgs/snes.png'
 // import image16 from './imgs/16.png'
 
 // let minted = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 let index = 0;
 
+const Splash = (props: any) => {
+  // const [loggedIn, setLoggedIn] = React.useState<boolean>(false)
+  // const [address, setAddress] = React.useState<any>(null)
+
+  sequence.initWallet('polygon') 
+
+  const connect = async () => {
+
+    const wallet = sequence.getWallet()
+    const connectWallet = await wallet.connect({
+      networkId: 137,
+      app: 'Paris Basketball',
+      authorize: true,
+      settings: {
+        theme: 'dark'
+      }
+    })
+
+    if(connectWallet.connected) {
+      props.setLoggedIn(true)
+      props.setAddress(connectWallet.session!.accountAddress!)
+    }
+  }
+
+  return(<>
+    <br/>
+    <br/>
+    <br/>
+    <h1 className='title'>Sequence Drop</h1>
+    <br/>
+    <br/>
+    <img className='jiggle-image' src={controller} />
+    <br/>
+    <Box justifyContent={'center'}>
+      <Button onClick={connect} variant={'primary'} size='lg' label="login"/>
+    </Box>
+  </>)
+}
+
 function App() {
+  const [address, setAddress] = React.useState<any>(null)
 
   sequence.initWallet('mumbai')
 
@@ -65,7 +108,8 @@ function App() {
   const [connected, setConnected] = React.useState(false)
 
   const [init, setInit] = React.useState(false)
-  const [loading, setLoading] = React.useState(false)
+  const [loading, setLoading] = React.useState(true)
+  const [loggedIn, setLoggedIn] = React.useState(false)
 
   const advance = () => {
     console.log('advancing')
@@ -92,11 +136,29 @@ function App() {
     }
   }
 
+  const getBalances = async () => {
+    const indexer = new SequenceIndexerClient('https://mumbai-indexer.sequence.app')
+
+    const contractAddress = '0xd864aB22AF4b21c3Da6b0200b18e8611d3E1D5f0'
+
+    const nftBalances = await indexer.getTokenBalances({
+        contractAddress: contractAddress,
+        includeMetadata: true
+    })
+
+    console.log('collection of items:', nftBalances)
+  }
+
   React.useEffect(() => {
     if(!init){
-      setInit(true)
+      setInterval(() => {
+        getBalances()
+      }, 2000)
+
       const imageRed = document.getElementById('red')!;
-      imageRed.addEventListener('load', function() {
+      
+      if(imageRed) imageRed!.addEventListener('load', function() {
+        setInit(true)
         // Image has finished loading
         console.log('Image loaded successfully!');
         setPendingRed(false)
@@ -107,37 +169,40 @@ function App() {
         if(!pendingRed && !pendingBlue && !pendingBlue && !pendingYellow){
           setLoading(false)
         }
-      });
+      })
+
       const imageBlue = document.getElementById('blue')!;
-      imageBlue.addEventListener('load', function() {
+      if(imageBlue) imageBlue!.addEventListener('load', function() {
         // Image has finished loading
         console.log('Image loaded successfully!');
         setPendingBlue(false)
         if(!pendingRed && !pendingBlue && !pendingBlue && !pendingYellow){
           setLoading(false)
         }
-      });
+      })
+
       const imageYellow = document.getElementById('yellow')!;
-      imageYellow.addEventListener('load', function() {
+      if(imageYellow) imageYellow!.addEventListener('load', function() {
         // Image has finished loading
         console.log('Image loaded successfully!');
         setPendingYellow(false)
         if(!pendingRed && !pendingBlue && !pendingBlue && !pendingYellow){
           setLoading(false)
         }
-      });
+      })
+
       const imageGreen = document.getElementById('green')!;
-      imageGreen.addEventListener('load', function() {
+      if(imageGreen) imageGreen!.addEventListener('load', function() {
         // Image has finished loading
         console.log('Image loaded successfully!');
         setPendingGreen(false)
         if(!pendingRed && !pendingBlue && !pendingBlue && !pendingYellow){
           setLoading(false)
         }
-      });
+      })
     }
 
-  }, [index, redImage, minted, step, pendingBlue, pendingGreen, pendingRed, pendingYellow])
+  }, [index, loggedIn, redImage, minted, step, pendingBlue, pendingGreen, pendingRed, pendingYellow])
 
   const handleMintChange = (index: any, pending: any) => {
     let items = [...minted];
@@ -178,116 +243,121 @@ function App() {
       <br/>
       <br/>
       <br/>
-      <div className="container">
-        <div className="grid-container">
-        <div className={`red square ${loading ? 'loading' : null}`} 
-            onMouseLeave={() => {
-              setHoverImage('')
-              setRed(false)
-              setLeft(false)
-            }} 
-            onMouseEnter={()=> {
-              setHoverImage(redImage)
-              setRed(true)
-              setLeft(true)
-            }}
-            >
-            { !select ? minted[index] ? <div className="grid-text">{pendingRed ? <Spinner size='lg'/> : <CheckmarkIcon size={'xl'}/>}</div> : null : null }
-            <div className={`image-wrapper ${minted[index] && !select ? 'claimed' : null}`}>
-              { !select ? <img id="red" src={redImage} alt="your image description"/> : <p>{minted[index]}</p>}
-            </div>
-          </div>
-          {loading ? <Placeholder/> : null }
-          <div className={`blue square ${loading ? 'loading' : null}`}  onMouseLeave={() => {
-              setHoverImage('')
-              setLeft(false)
-            }} 
-            onMouseEnter={()=> {
-              setHoverImage(blueImage)
-              setLeft(false)
-            }}>
-            { !select ? minted[index + 2] ? <div className="grid-text">{pendingBlue ? <Spinner size='lg'/> : <CheckmarkIcon size={'xl'}/>}</div> : null : null }
-            <div className={`image-wrapper ${minted[index + 2] && !select ? 'claimed' : null}`}>
-              { !select ? <img id="blue" src={blueImage} alt="your image description"/> : <p>{minted[index + 2]}</p>}
-            </div>
-          </div>
-          {loading ? <Placeholder/> : null }
+      {
+        ! loggedIn 
+        ? 
+          <Splash setLoggedIn={setLoggedIn} setAddress={setAddress}/> 
+        :
+          <>
+            <div className="container">
+              <div className="grid-container">
+              <div className={`red square ${loading ? 'loading' : null}`} 
+                  onMouseLeave={() => {
+                    setHoverImage('')
+                    setRed(false)
+                    setLeft(false)
+                  }} 
+                  onMouseEnter={()=> {
+                    setHoverImage(redImage)
+                    setRed(true)
+                    setLeft(true)
+                  }}
+                  >
+                  { !select ? minted[index] ? <div className="grid-text">{pendingRed ? <Spinner size='lg'/> : <CheckmarkIcon size={'xl'}/>}</div> : null : null }
+                  <div className={`image-wrapper ${minted[index] && !select ? 'claimed' : null}`}>
+                    { !select ? <img id="red" src={redImage} alt="your image description"/> : <p>{minted[index]}</p>}
+                  </div>
+                </div>
+                {loading ? <Placeholder/> : null }
+                <div className={`blue square ${loading ? 'loading' : null}`}  onMouseLeave={() => {
+                    setHoverImage('')
+                    setLeft(false)
+                  }} 
+                  onMouseEnter={()=> {
+                    setHoverImage(blueImage)
+                    setLeft(false)
+                  }}>
+                  { !select ? minted[index + 2] ? <div className="grid-text">{pendingBlue ? <Spinner size='lg'/> : <CheckmarkIcon size={'xl'}/>}</div> : null : null }
+                  <div className={`image-wrapper ${minted[index + 2] && !select ? 'claimed' : null}`}>
+                    { !select ? <img id="blue" src={blueImage} alt="your image description"/> : <p>{minted[index + 2]}</p>}
+                  </div>
+                </div>
+                {loading ? <Placeholder/> : null }
 
-          <div className={`yellow square ${loading ? 'loading' : null}`}  onMouseLeave={() => {
-              setHoverImage('')
-              setLeft(false)
-            }} 
-            onMouseEnter={()=> {
-              setHoverImage(yellowImage)
-              setLeft(true)
-            }}>
-            { !select ? minted[index + 1] ? <div className="grid-text">{pendingYellow ? <Spinner size='lg'/> : <CheckmarkIcon size={'xl'}/>}</div> : null : null }
-            <div className={`image-wrapper ${minted[index + 1] && !select ? 'claimed' : null}`}>
-              { !select ? <img id="yellow" src={yellowImage} alt="your image description"/> : <p>{minted[index + 1]}</p>}
-            </div>
-          </div> 
-          {loading ? <Placeholder/> : null }
+                <div className={`yellow square ${loading ? 'loading' : null}`}  onMouseLeave={() => {
+                    setHoverImage('')
+                    setLeft(false)
+                  }} 
+                  onMouseEnter={()=> {
+                    setHoverImage(yellowImage)
+                    setLeft(true)
+                  }}>
+                  { !select ? minted[index + 1] ? <div className="grid-text">{pendingYellow ? <Spinner size='lg'/> : <CheckmarkIcon size={'xl'}/>}</div> : null : null }
+                  <div className={`image-wrapper ${minted[index + 1] && !select ? 'claimed' : null}`}>
+                    { !select ? <img id="yellow" src={yellowImage} alt="your image description"/> : <p>{minted[index + 1]}</p>}
+                  </div>
+                </div> 
+                {loading ? <Placeholder/> : null }
 
-           <div className={`green square ${loading ? 'loading' : null}`}  onMouseLeave={() => {
-              setHoverImage('')
-            }} 
-            onMouseEnter={()=> {
-              setHoverImage(greenImage)
-            }}>
-            { !select ? minted[index + 3] ? <div className="grid-text">{pendingGreen ? <Spinner size='lg'/> : <CheckmarkIcon size={'xl'}/>}</div> : null : null }
-            <div className={`image-wrapper ${minted[index + 3] && !select ? 'claimed' : null}`}>
-              { !select ? <img id="green" src={greenImage} alt="your image description"/> : <p>{minted[index + 3]}</p>}
-            </div>
-          </div>
-          {loading ? <Placeholder/> : null }
+                <div className={`green square ${loading ? 'loading' : null}`}  onMouseLeave={() => {
+                    setHoverImage('')
+                  }} 
+                  onMouseEnter={()=> {
+                    setHoverImage(greenImage)
+                  }}>
+                  { !select ? minted[index + 3] ? <div className="grid-text">{pendingGreen ? <Spinner size='lg'/> : <CheckmarkIcon size={'xl'}/>}</div> : null : null }
+                  <div className={`image-wrapper ${minted[index + 3] && !select ? 'claimed' : null}`}>
+                    { !select ? <img id="green" src={greenImage} alt="your image description"/> : <p>{minted[index + 3]}</p>}
+                  </div>
+                </div>
+                {loading ? <Placeholder/> : null }
 
-        </div>
-        {(hoverImage && (red || yellow) && (left))? <img className='display-left' src={hoverImage} /> : (hoverImage && (red || yellow) && (!left)) ? <img className='display-right' src={hoverImage} />: null }
-      </div>
-      <div className='spacer'>
-      </div>
-      <div>
-        
-      </div>
-      <div className="keypad">
-        <div className="keypad__inner">
-          <div className="keypad__title">Sequence Drop</div><br/>
-          <div className="keypad__subtitle">NFT Entertainment system</div>
-          <div className="central-button-container select" onClick={() => setSelect((prev: any) => !prev)}>
-            <div className="central-button"></div>
-            <br/>
-            <p className='p'>Details</p>
-          </div>
-          <div className="central-button-container start" onClick={openWallet}>
-            <div className="central-button"></div>
-            <br/>
-            <p className='p'>&nbsp;&nbsp;Wallet</p>
-          </div>
-        </div>
-        <div className="pad-left">
-          <div className="cross-x" >
-            <div className='container'>
-              <div className="left" onClick={() => before()}><ChevronLeftIcon size='xl'/></div>
-              <div className="right" onClick={() => advance()}><ChevronRightIcon size='xl'/></div>
+              </div>
+              {(hoverImage && (red || yellow) && (left))? <img className='display-left' src={hoverImage} /> : (hoverImage && (red || yellow) && (!left)) ? <img className='display-right' src={hoverImage} />: null }
             </div>
-            {/* <p className='float-child-left' onClick={() => before()}><ChevronLeftIcon size='xl'/></p>
-            &nbsp;&nbsp;&nbsp;
-            <p className='float-child' onClick={() => advance()}><ChevronRightIcon size='xl'/></p> */}
-          </div>
-          {/* <div className="cross-middle"></div> */}
-        </div>
-        <div className="pad-right">
-          <div className="circular-button y-button" onClick={() => { handleMintChange(index + 3, setPendingGreen); setGreenClaimed(true)}}></div>
-          <div className="circular-button b-button" onClick={() => { handleMintChange(index + 1, setPendingYellow); setYellowClaimed(true)}}></div>
-          <div className="circular-button x-button" onClick={() =>{handleMintChange(index + 2, setPendingBlue); setBlueClaimed(true)}}></div>
-          <div className="circular-button a-button" onClick={() => {handleMintChange(index, setPendingRed); setRedClaimed(true)}}></div>
-          <div className="ab-container circular-button-container"></div>
-          <div className="xy-container circular-button-container"></div>
-        </div>
-        <div className="l-button top-button"></div>
-        <div className="r-button top-button"></div>
-        <div className="wire"></div>
-      </div>
+            <div className='spacer'>
+            </div>
+            <div className="keypad">
+              <div className="keypad__inner">
+                <div className="keypad__title">Sequence Drop</div><br/>
+                <div className="keypad__subtitle">NFT Entertainment system</div>
+                <div className="central-button-container select" onClick={() => setSelect((prev: any) => !prev)}>
+                  <div className="central-button"></div>
+                  <br/>
+                  <p className='p'>Details</p>
+                </div>
+                <div className="central-button-container start" onClick={openWallet}>
+                  <div className="central-button"></div>
+                  <br/>
+                  <p className='p'>&nbsp;&nbsp;Wallet</p>
+                </div>
+              </div>
+              <div className="pad-left">
+                <div className="cross-x" >
+                  <div className='container'>
+                    <div className="left" onClick={() => before()}><ChevronLeftIcon size='xl'/></div>
+                    <div className="right" onClick={() => advance()}><ChevronRightIcon size='xl'/></div>
+                  </div>
+                  {/* <p className='float-child-left' onClick={() => before()}><ChevronLeftIcon size='xl'/></p>
+                  &nbsp;&nbsp;&nbsp;
+                  <p className='float-child' onClick={() => advance()}><ChevronRightIcon size='xl'/></p> */}
+                </div>
+                {/* <div className="cross-middle"></div> */}
+              </div>
+              <div className="pad-right">
+                <div className="circular-button y-button" onClick={() => { handleMintChange(index + 3, setPendingGreen); setGreenClaimed(true)}}></div>
+                <div className="circular-button b-button" onClick={() => { handleMintChange(index + 1, setPendingYellow); setYellowClaimed(true)}}></div>
+                <div className="circular-button x-button" onClick={() =>{handleMintChange(index + 2, setPendingBlue); setBlueClaimed(true)}}></div>
+                <div className="circular-button a-button" onClick={() => {handleMintChange(index, setPendingRed); setRedClaimed(true)}}></div>
+                <div className="ab-container circular-button-container"></div>
+                <div className="xy-container circular-button-container"></div>
+              </div>
+              <div className="l-button top-button"></div>
+              <div className="r-button top-button"></div>
+              <div className="wire"></div>
+            </div>
+          </>
+      }
     </div>
   );
 }

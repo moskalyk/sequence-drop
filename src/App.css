@@ -13,6 +13,10 @@
   }
 }
 
+.title {
+  font-family: 'Arcade';
+}
+
 .App-header {
   background-color: #282c34;
   min-height: 100vh;
@@ -501,5 +505,17 @@ img {
 .loading {
   display: none;
   position: absolute;
+}
+
+@keyframes jiggling {
+  0% { transform: rotate(0); }
+  25% { transform: rotate(-5deg); }
+  45% { transform: rotate(5deg); }
+  75% { transform: rotate(0deg);}
+  100% { transform: rotate(0); }
+}
+
+.jiggle-image {
+  animation: jiggling 2s infinite;
 }
 

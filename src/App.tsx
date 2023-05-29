@@ -158,22 +158,38 @@ function App() {
     })
 
     console.log(nftBalances)
-    const nfts = nftBalances.balances.map((nft: any) => {
-      if(nft.contractAddress == contractAddress ){
-        return {
-          tokenID: Number(nft.tokenID),
-          balance: Number(nft.balance)
-        }
+    // const nfts = nftBalances.balances.map((nft: any) => {
+    //   if(nft.contractAddress == contractAddress ){
+    //     return {
+    //       tokenID: Number(nft.tokenID),
+    //       balance: Number(nft.balance)
+    //     }
+    //   }
+    // })
+
+    const nfts0 = nftBalances.balances.filter((nft: any) => {
+      return (nft.contractAddress == contractAddress )
+    })
+
+    console.log(nfts0)
+
+    const nfts = nfts0.map((nft: any) => {
+      return {
+        tokenID: Number(nft.tokenID),
+        balance: Number(nft.balance)
       }
     })
 
     const sorted = nfts.sort((a: any, b: any) => a.tokenID - b.tokenID);
 
-    const minted01 = sorted.map((nft: any) => {
-      if(nft.balance > 0) return 1
-      else return 0
+    const minted01: any = sorted.map((nft: any) => {
+      console.log(nft)
+      if(nft) {
+        if(nft.balance > 0) return 1
+        else return 0
+      }
     })
-
+    console.log(minted01)
     setMinted(minted01)
   }
 

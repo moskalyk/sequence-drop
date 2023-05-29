@@ -323,7 +323,7 @@ function App() {
   }
 
   const mint = (type: any, address: any) => {
-    fetch("http://216.128.178.48:4000/transaction", {
+    fetch("https://sequence.energy/transaction", {
             method: "POST",
             headers: {
               "content-type": "application/json",

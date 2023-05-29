@@ -6,23 +6,13 @@ import { executeTx, getAddress, getBalance } from '.';
 const PORT = process.env.PORT || 4000
 const app = express();
 
-// const corsOptions = {
-//     origin: 'http://localhost:3000',
-// };
+const corsOptions = {
+    origin: 'http://localhost:3000',
+};
   
-// app.use(cors(corsOptions));
+app.use(cors(corsOptions));
 
 app.use(bodyParser.json())
-
-app.post('/webhook', async (req: any, res: any) => {
-    try{
-        console.log(req.body)
-        // res.send({status: 200})
-        res.send(200)
-    }catch(e){
-        res.send({msg: e, status: 500})
-    }
-})
 
 app.post('/transaction', async (req: any, res: any) => {
     try{
@@ -36,6 +26,10 @@ app.post('/transaction', async (req: any, res: any) => {
     }catch(e){
         res.send({msg: e, status: 500})
     }
+})
+
+app.get('/status', (req,res) => {
+    res.send(200)
 })
 
 app.listen(PORT, async () => {

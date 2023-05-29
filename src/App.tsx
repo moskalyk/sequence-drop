@@ -64,6 +64,8 @@ const Splash = (props: any) => {
   </>)
 }
 
+let pendingDrop = false;
+
 function App() {
   const [address, setAddress] = React.useState<any>(null)
 
@@ -109,7 +111,7 @@ function App() {
     console.log('advancing')
     if(index < 12 ){
       index = index + 4
-      setLoading(true)
+      if(!select) setLoading(true)
       setRedImage(collection[index].image)
       setBlueImage(collection[index + 2].image)
       setYellowImage(collection[index + 1].image)
@@ -121,7 +123,7 @@ function App() {
     console.log('before')
     if(index > 0 ){
       index = index - 4
-      setLoading(true)
+      if(!select) setLoading(true)
       console.log('before2');
       setRedImage(collection[index].image)
       setBlueImage(collection[index + 2].image)
@@ -135,8 +137,11 @@ function App() {
 
     const nftBalances = await indexer.getTokenBalances({
         contractAddress: contractAddress,
+        accountAddress: contractAddress,
         includeMetadata: true
     })
+
+    console.log(nftBalances)
 
     const nfts = nftBalances.balances.map((nft: any) => {
       return {
@@ -144,6 +149,7 @@ function App() {
         tokenID: nft.tokenID
       }
     })
+    console.log(nfts)
     setCollection(nfts)
   }
 
@@ -154,6 +160,7 @@ function App() {
 
     const nftBalances = await indexer.getTokenBalances({
         accountAddress: accountAddress,
+        contractAddress: '0xd864aB22AF4b21c3Da6b0200b18e8611d3E1D5f0'
         // includeMetadata: true
     })
 
@@ -180,17 +187,37 @@ function App() {
       }
     })
 
-    const sorted = nfts.sort((a: any, b: any) => a.tokenID - b.tokenID);
+    // const sorted = nfts.sort((a: any, b: any) => a.tokenID - b.tokenID);
 
-    const minted01: any = sorted.map((nft: any) => {
-      console.log(nft)
-      if(nft) {
-        if(nft.balance > 0) return 1
-        else return 0
+    if(collection.length > 0){
+      const assembled: any = []
+      console.log(collection.length)
+      collection.map((nft: any ) => {
+        // nft.tokenID
+        let balanceTrue = false;
+        nfts.map((nft0: any) => {
+          if(nft.tokenID == nft0.tokenID && nft0.balance > 0){
+            assembled.push(1)
+            balanceTrue = true;
+          }
+        })
+        if(!balanceTrue) assembled.push(0)
+      })
+
+      // const minted01: any = sorted.map((nft: any) => {
+      //   console.log(nft)
+      //   if(nft) {
+      //     if(nft.balance > 0) return 1
+      //     else return 0
+      //   }
+      // })
+      // console.log(minted01)
+      console.log(assembled)
+      if(!pendingDrop){
+        console.log('SETTING')
+        setMinted(assembled)
       }
-    })
-    console.log(minted01)
-    setMinted(minted01)
+    }
   }
 
   React.useEffect(() => {
@@ -203,10 +230,13 @@ function App() {
   }, [collection])
 
   React.useEffect(() => {
+    let interval: any;
     if(!init){
+      console.log('INIT')
       if(loggedIn){
         getAvailableBalances()
-        setInterval(() => {
+        interval = setInterval(() => {
+          console.log('TEST', collection.length)
           getMintedBalances()
         }, 2000)
       }
@@ -258,19 +288,21 @@ function App() {
       })
     }
 
-  }, [collection, index, loggedIn, redImage, minted, step, pendingBlue, pendingGreen, pendingRed, pendingYellow])
+    // return () => clearInterval(interval)
+  }, [collection, index, loggedIn, redImage, minted, step, pendingBlue, pendingRed, pendingGreen, pendingYellow])
 
   const handleMintChange = (index: any, pending: any) => {
     let items = [...minted];
     items[index] = 1;
-    setMinted(items)
     pending(true)
+    setMinted(items)
+    pendingDrop = true;
 
     mint(collection[index].tokenID, address)
 
-    setTimeout(() => {
-      pending(false)
-    }, 2000)
+    // setTimeout(() => {
+    //   pending(false)
+    // }, 2000)
   }
 
   const openWallet = async () => {
@@ -302,7 +334,13 @@ function App() {
             }),
           }).then((res) => {
             console.log(res)
-
+            setTimeout(() => {
+              setPendingBlue(false)
+              setPendingRed(false)
+              setPendingYellow(false)
+              setPendingGreen(false)
+              pendingDrop = false;
+            }, 2000)
           })
   }
 
@@ -364,7 +402,7 @@ function App() {
                   }}>
                   { !select ? minted[index + 2] ? <div className="grid-text">{pendingBlue ? <Spinner size='lg'/> : <CheckmarkIcon size={'xl'}/>}</div> : null : null }
                   <div className={`image-wrapper ${minted[index + 2] && !select ? 'claimed' : null}`}>
-                    { !select ? <img id="blue" src={blueImage} alt="your image description"/> : <p>{minted[index + 2]}</p>}
+                    { !select ? <img id="blue" src={blueImage} alt="your image description"/> : <p>{minted[index + 2].toString()}</p>}
                   </div>
                 </div>
                 {loading ? <Placeholder/> : null }

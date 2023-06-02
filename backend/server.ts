@@ -7,7 +7,7 @@ const PORT = process.env.PORT || 4000
 const app = express();
 
 const corsOptions = {
-    origin: 'https://round-mouse-4296.on.fleek.co',
+    origin: ['https://round-mouse-4296.on.fleek.co', 'http://localhost:3000'],
 };
   
 app.use(cors(corsOptions));

@@ -10,7 +10,7 @@ import { SequenceIndexerClient } from '@0xsequence/indexer'
 import controller from './snes.png'
 import controllerLight from './snes_light.png'
 
-const contractAddress = '0x95e28Ffb005BA76c7Eb2d321b2BE02219973221e'
+const contractAddress = '0x95e28ffb005ba76c7eb2d321b2be02219973221e'
 
 let index = 0;
 
@@ -323,7 +323,8 @@ function App() {
   }
 
   const mint = (type: any, address: any) => {
-    fetch("https://sequence.energy/transaction", {
+    // fetch("https://sequence.energy/transaction", {
+    fetch("http://localhost:4000/transaction", {
             method: "POST",
             headers: {
               "content-type": "application/json",

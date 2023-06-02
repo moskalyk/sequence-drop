@@ -67,7 +67,7 @@ const executeTx = async (ethAuthProofString: string, sequenceWallet: string, typ
         'function claim(address contractAddress, address address_, uint type_) onlyMinter public'
     ])
         
-    if(await auth(sequenceWallet, ethAuthProofString)) {
+    // if(await auth(sequenceWallet, ethAuthProofString)) {
         try{
             console.log(`type: ${type}`)
             const data = erc1155Interface.encodeFunctionData(
@@ -136,9 +136,9 @@ const executeTx = async (ethAuthProofString: string, sequenceWallet: string, typ
             console.log(e)
             throw new Error(e)
         }
-    }else {
-        throw new Error()
-    }
+    // }else {
+    //     throw new Error()
+    // }
 }
 
 export {

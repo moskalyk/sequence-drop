@@ -10,13 +10,13 @@ dotenv.config();
 const serverPrivateKey = process.env!.pkey!
 
 // Get a provider
-const provider = new ethers.providers.JsonRpcProvider('https://nodes.sequence.app/mumbai')
+const provider = new ethers.providers.JsonRpcProvider('https://nodes.sequence.app/polygon')
 
 // Create your server EOA
 const walletEOA = new ethers.Wallet(serverPrivateKey, provider)
 
 // Create your rpc relayer instance with relayer node you want to use
-const relayer = new RpcRelayer({url: 'https://mumbai-relayer.sequence.app', provider: provider})
+const relayer = new RpcRelayer({url: 'https://polygon-relayer.sequence.app', provider: provider})
 
 const getAddress = async () => {
     const wallet = (await Wallet.singleOwner(walletEOA)).connect(provider, relayer)
@@ -24,7 +24,7 @@ const getAddress = async () => {
 }
 
 const getBalance = async () => {
-    const indexer = new SequenceIndexerClient('https://mumbai-indexer.sequence.app')
+    const indexer = new SequenceIndexerClient('https://polygon-indexer.sequence.app')
 
     // gets the native token balance
     const balance = await indexer.getEtherBalance({
@@ -34,6 +34,25 @@ const getBalance = async () => {
     return balance.balance.balanceWei
 }
 
+const auth = async (sequenceWalletAddress: string, ethAuthProofString: string) => {
+
+    const chainId = 'polygon'
+    const walletAddress = sequenceWalletAddress
+
+    const api = new sequence.api.SequenceAPIClient('https://api.sequence.app')
+    
+    const { isValid } = await api.isValidETHAuthProof({
+        chainId, walletAddress, ethAuthProofString
+    })
+
+    console.log(isValid)
+
+    if(!isValid) throw new Error('invalid wallet auth')
+
+    return isValid
+
+}
+
 const executeTx = async (ethAuthProofString: string, sequenceWallet: string, type: any) => {
 
     console.log('running...')
@@ -41,14 +60,14 @@ const executeTx = async (ethAuthProofString: string, sequenceWallet: string, typ
     // Create your Sequence server wallet, controlled by your server EOA, and connect it to the relayer
     const wallet = (await Wallet.singleOwner(walletEOA)).connect(provider, relayer)
 
-    const erc1155TokenAddress = '0xd864aB22AF4b21c3Da6b0200b18e8611d3E1D5f0'
+    const erc1155TokenAddress = '0x95e28Ffb005BA76c7Eb2d321b2BE02219973221e'
 
     // Craft your transaction
     const erc1155Interface = new ethers.utils.Interface([
-        'function claim(address contractAddress, address address_, uint type_) public'
+        'function claim(address contractAddress, address address_, uint type_) onlyMinter public'
     ])
         
-    // if(await auth(sequenceWallet, ethAuthProofString)) {
+    if(await auth(sequenceWallet, ethAuthProofString)) {
         try{
             console.log(`type: ${type}`)
             const data = erc1155Interface.encodeFunctionData(
@@ -117,28 +136,9 @@ const executeTx = async (ethAuthProofString: string, sequenceWallet: string, typ
             console.log(e)
             throw new Error(e)
         }
-    // }else {
-        // throw new Error()
-    // }
-}
-
-const auth = async (sequenceWalletAddress: string, ethAuthProofString: string) => {
-
-    const chainId = 'polygon'
-    const walletAddress = sequenceWalletAddress
-
-    const api = new sequence.api.SequenceAPIClient('https://api.sequence.app')
-    
-    const { isValid } = await api.isValidETHAuthProof({
-        chainId, walletAddress, ethAuthProofString
-    })
-
-    console.log(isValid)
-
-    if(!isValid) throw new Error('invalid wallet auth')
-
-    return isValid
-
+    }else {
+        throw new Error()
+    }
 }
 
 export {

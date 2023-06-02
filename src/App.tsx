@@ -10,7 +10,7 @@ import { SequenceIndexerClient } from '@0xsequence/indexer'
 import controller from './snes.png'
 import controllerLight from './snes_light.png'
 
-const contractAddress = '0xd864ab22af4b21c3da6b0200b18e8611d3e1d5f0'
+const contractAddress = '0x95e28Ffb005BA76c7Eb2d321b2BE02219973221e'
 
 let index = 0;
 
@@ -31,7 +31,7 @@ const Splash = (props: any) => {
 
     const wallet = sequence.getWallet()
     const connectWallet = await wallet.connect({
-      networkId: 80001,
+      networkId: 137,
       app: 'Sequence Drop',
       authorize: true,
       settings: {
@@ -69,7 +69,7 @@ let pendingDrop = false;
 function App() {
   const [address, setAddress] = React.useState<any>(null)
 
-  sequence.initWallet('mumbai')
+  sequence.initWallet('polygon')
 
   const {theme, setTheme} = useTheme()
   const [step, setStep] = React.useState(0)
@@ -133,7 +133,7 @@ function App() {
   }
 
   const getAvailableBalances = async () => {
-    const indexer = new SequenceIndexerClient('https://mumbai-indexer.sequence.app')
+    const indexer = new SequenceIndexerClient('https://polygon-indexer.sequence.app')
 
     const nftBalances = await indexer.getTokenBalances({
         contractAddress: contractAddress,
@@ -154,13 +154,13 @@ function App() {
   }
 
   const getMintedBalances = async () => {
-    const indexer = new SequenceIndexerClient('https://mumbai-indexer.sequence.app')
+    const indexer = new SequenceIndexerClient('https://polygon-indexer.sequence.app')
 
     const accountAddress = address
 
     const nftBalances = await indexer.getTokenBalances({
         accountAddress: accountAddress,
-        contractAddress: '0xd864aB22AF4b21c3Da6b0200b18e8611d3E1D5f0'
+        contractAddress: contractAddress
         // includeMetadata: true
     })
 
@@ -309,7 +309,7 @@ function App() {
     const wallet = sequence.getWallet()
     if(!connected){
       const connectWallet = await wallet.connect({
-        networkId: 80001,
+        networkId: 137,
         app: 'Sequence Drop',
         authorize: true,
         settings: {

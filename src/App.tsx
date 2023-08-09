@@ -323,8 +323,8 @@ function App() {
   }
 
   const mint = (type: any, address: any) => {
-    // fetch("https://sequence.energy/transaction", {
-    fetch("http://localhost:4000/transaction", {
+    fetch("https://sequence.energy/transaction", {
+    // fetch("http://localhost:4000/transaction", {
             method: "POST",
             headers: {
               "content-type": "application/json",
